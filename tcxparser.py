@@ -46,15 +46,21 @@ class TCXParser:
     def time_values(self):
         return [x.text for x in self.root.xpath('//ns:Time', namespaces={'ns': namespace})]
 
+    def latitude_points(self):
+        return [float(x.text) for x in self.root.xpath('//ns:Position/ns:LatitudeDegrees', namespaces={'ns': namespace})]
+   
+    def longitude_points(self):
+        return [float(x.text) for x in self.root.xpath('//ns:Position/ns:LongitudeDegrees', namespaces={'ns': namespace})]
+    
     @property
     def latitude(self):
-        if hasattr(self.activity.Lap.Track.Trackpoint, 'Position'):
-            return self.activity.Lap.Track.Trackpoint.Position.LatitudeDegrees.pyval
+        if hasattr(self.activity.Track.Trackpoint, 'Position'):
+            return self.activity.Track.Trackpoint.Position.LatitudeDegrees.pyval
 
     @property
     def longitude(self):
-        if hasattr(self.activity.Lap.Track.Trackpoint, 'Position'):
-            return self.activity.Lap.Track.Trackpoint.Position.LongitudeDegrees.pyval
+        if hasattr(self.activity.Track.Trackpoint, 'Position'):
+            return self.activity.Track.Trackpoint.Position.LongitudeDegrees.pyval
 
     @property
     def activity_type(self):
