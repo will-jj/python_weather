@@ -52,6 +52,9 @@ class TCXParser:
     def longitude_points(self):
         return [float(x.text) for x in self.root.xpath('//ns:Position/ns:LongitudeDegrees', namespaces={'ns': namespace})]
     
+    def distance_points(self):
+        return [float(x.text) for x in self.root.xpath('//ns:Trackpoint/ns:DistanceMeters', namespaces={'ns': namespace})]
+    
     @property
     def latitude(self):
         if hasattr(self.activity.Track.Trackpoint, 'Position'):
