@@ -24,6 +24,8 @@ class tcxWeather:
         self.distanceTotal = self.distance[self.length-1]
         self.__bearing__()
         self.tZ = timezone('Europe/London')
+
+
     def __bearing__(self):
         self.bearing = list()
         self.bearing.append(0) #first bearing 0
@@ -37,6 +39,8 @@ class tcxWeather:
             y = np.sin(λ[x]-λ[x-1]) * np.cos(φ[x])
             x = np.cos(φ[x-1])*np.sin(φ[x]) - np.sin(φ[x-1])*np.cos(φ[x])*np.cos(λ[x]-λ[x-1])
             self.bearing.append(np.degrees(np.arctan2(y, x))%360)
+
+
     def __bearingdec__(self): #fix to one function for both bearings
         self.bear = list()
         self.bear.append(0) #first bearing 0
@@ -50,6 +54,8 @@ class tcxWeather:
             y = np.sin(λ[x]-λ[x-1]) * np.cos(φ[x])
             x = np.cos(φ[x-1])*np.sin(φ[x]) - np.sin(φ[x-1])*np.cos(φ[x])*np.cos(λ[x]-λ[x-1])
             self.bear.append(np.degrees(np.arctan2(y, x))%360) #0-360 instead of -180:180
+
+
     def speed(self, **kwargs):
         mps_mph = 2.23694
         mps_kph = 3.6
@@ -66,6 +72,8 @@ class tcxWeather:
             self.kph = self.mps*mps_kph
             self.mph = self.mps*mps_mph
         self.__time__()
+
+
     def decimate(self, **kwargs):
         if 'Distance' in kwargs:
             distance = kwargs['Distance']
@@ -94,6 +102,8 @@ class tcxWeather:
         self.dist = self.dist[np.ix_(ind)]
         self.__bearingdec__()
         self.__timeDec__()
+
+
     def __timeDec__(self):
         self.time = list()
         time = 0
@@ -103,6 +113,8 @@ class tcxWeather:
             time += delDist/self.mps
             combined = self.rideStartTime + timedelta(seconds=time)
             self.time.append(combined)
+
+
     def __time__(self):
         self.timeSeconds = list()
         self.timeSeconds.append(0)
@@ -112,6 +124,8 @@ class tcxWeather:
             time += delDist/self.mps
             self.timeSeconds.append(int(time))
         self.totalTime = time
+
+
     def getWeatherData(self, apikey='none', units='si', writeF=False):
         if hasattr(self, 'weatherData'):
             raise Exception('Data already exists')
@@ -131,6 +145,8 @@ class tcxWeather:
                 file.close
             self.weatherData.append(json.loads(data))
         print('Gathered weather data')
+
+
     def loadExistingData(self, location):
         if hasattr(self, 'weatherData'):
             raise Exception('Data already exists')
@@ -141,8 +157,11 @@ class tcxWeather:
             with open(filename) as data_file:
                 self.weatherData.append(json.load(data_file))
 
+
     def clearWeatherData(self):
         del self.weatherData
+
+
     def getForecast(self): #potentially make this its own class inheriting from tcxweather
         self.precipIntensity = list()
         self.windBearing = list()
@@ -201,6 +220,8 @@ class tcxWeather:
                     self.precipType.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipType"])
                 else:
                     self.precipType.append("None")
+
+
     def setRideStartTime(self,**kwargs): #TODO (Check is in range of forecast)
         if 'date' in kwargs:
             date = datetime.strptime(kwargs["date"], "%d/%m").date()
