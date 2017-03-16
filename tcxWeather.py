@@ -29,30 +29,30 @@ class tcxWeather:
     def __bearing__(self):
         self.bearing = list()
         self.bearing.append(0) #first bearing 0
-        φ = list()
-        λ = list()
+        phi = list()
+        lambd = list()
         for x in self.latitude:
-            φ.append(np.deg2rad(x))
+            phi.append(np.deg2rad(x))
         for x in self.longitude:
-            λ.append(np.deg2rad(x))
+            lambd.append(np.deg2rad(x))
         for x in range(1, self.length):
-            y = np.sin(λ[x]-λ[x-1]) * np.cos(φ[x])
-            x = np.cos(φ[x-1])*np.sin(φ[x]) - np.sin(φ[x-1])*np.cos(φ[x])*np.cos(λ[x]-λ[x-1])
+            y = np.sin(lambd[x]-lambd[x-1]) * np.cos(phi[x])
+            x = np.cos(phi[x-1])*np.sin(phi[x]) - np.sin(phi[x-1])*np.cos(phi[x])*np.cos(lambd[x]-lambd[x-1])
             self.bearing.append(np.degrees(np.arctan2(y, x))%360)
 
 
     def __bearingdec__(self): #fix to one function for both bearings
         self.bear = list()
         self.bear.append(0) #first bearing 0
-        φ = list()
-        λ = list()
+        phi = list()
+        lambd = list()
         for x in self.lat:
-            φ.append(np.deg2rad(x))
+            phi.append(np.deg2rad(x))
         for x in self.lon:
-            λ.append(np.deg2rad(x))
+            lambd.append(np.deg2rad(x))
         for x in range(1, len(self.lat)):
-            y = np.sin(λ[x]-λ[x-1]) * np.cos(φ[x])
-            x = np.cos(φ[x-1])*np.sin(φ[x]) - np.sin(φ[x-1])*np.cos(φ[x])*np.cos(λ[x]-λ[x-1])
+            y = np.sin(lambd[x]-lambd[x-1]) * np.cos(phi[x])
+            x = np.cos(phi[x-1])*np.sin(phi[x]) - np.sin(phi[x-1])*np.cos(phi[x])*np.cos(lambd[x]-lambd[x-1])
             self.bear.append(np.degrees(np.arctan2(y, x))%360) #0-360 instead of -180:180
 
 
@@ -206,23 +206,23 @@ class tcxWeather:
             self.windBearing.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windBearing"])
             self.windSpeed.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windSpeed"])
             self.relWindBear.append((self.windBearing[x]-self.bear[x])%360)
-            if (self.timeMin[x])<60:
+            if (self.timeMin[x]) < 60:
                 self.precipProbability.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipProbability"])
                 self.precipIntensity.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipIntensity"])
-                if self.precipIntensity[x]>0:               
+                if self.precipIntensity[x] > 0:               
                     self.precipType.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipType"])
                 else:
                     self.precipType.append("None")
             else:
                 self.precipIntensity.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipIntensity"])
                 self.precipProbability.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipProbability"])
-                if self.precipIntensity[x]>0:               
+                if self.precipIntensity[x] > 0:               
                     self.precipType.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipType"])
                 else:
                     self.precipType.append("None")
 
 
-    def setRideStartTime(self,**kwargs): #TODO (Check is in range of forecast)
+    def setRideStartTime(self, **kwargs): #TODO (Check is in range of forecast)
         if 'date' in kwargs:
             date = datetime.strptime(kwargs["date"], "%d/%m").date()
             date = date.replace(year=datetime.today().year)
