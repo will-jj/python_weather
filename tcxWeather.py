@@ -209,14 +209,14 @@ class tcxWeather:
             if (self.timeMin[x]) < 60:
                 self.precipProbability.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipProbability"])
                 self.precipIntensity.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipIntensity"])
-                if self.precipIntensity[x] > 0:               
+                if self.precipIntensity[x] > 0:
                     self.precipType.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipType"])
                 else:
                     self.precipType.append("None")
             else:
                 self.precipIntensity.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipIntensity"])
                 self.precipProbability.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipProbability"])
-                if self.precipIntensity[x] > 0:               
+                if self.precipIntensity[x] > 0:
                     self.precipType.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipType"])
                 else:
                     self.precipType.append("None")
