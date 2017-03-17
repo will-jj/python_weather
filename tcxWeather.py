@@ -139,7 +139,7 @@ class TcxRide:
 
 class RideWeather(TcxRide):
     """
-    Ride weather class
+    Ride weather class adds weather data functionality to TcxRide
     """
 
     def __init__(self):

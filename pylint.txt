@@ -255,3 +255,260 @@ Global evaluation
 -----------------
 Your code has been rated at 2.86/10 (previous run: 2.76/10, +0.10)
 
+************* Module tcxWeather
+W:126, 0: TODO (Check is in range of forecast) (fixme)
+C: 40, 0: Line too long (109/100) (line-too-long)
+C: 54, 0: Line too long (109/100) (line-too-long)
+C:144, 0: Exactly one space required after comma
+        TcxRide.__init__(self,xmlfile='demoRoute.tcx')
+                             ^ (bad-whitespace)
+C:156, 0: Line too long (117/100) (line-too-long)
+C:206, 0: Line too long (104/100) (line-too-long)
+C:210, 0: Line too long (105/100) (line-too-long)
+C:213, 0: Line too long (103/100) (line-too-long)
+C:220, 0: Line too long (105/100) (line-too-long)
+C:222, 0: Line too long (103/100) (line-too-long)
+C:223, 0: Line too long (105/100) (line-too-long)
+C:224, 0: Line too long (101/100) (line-too-long)
+C:232, 0: Line too long (114/100) (line-too-long)
+C:241, 0: Line too long (111/100) (line-too-long)
+C:246, 0: Trailing newlines (trailing-newlines)
+C:  1, 0: Invalid module name "tcxWeather" (invalid-name)
+C: 20, 8: Invalid attribute name "stravaTime" (invalid-name)
+C: 25, 8: Invalid attribute name "distanceTotal" (invalid-name)
+C: 27, 8: Invalid attribute name "tZ" (invalid-name)
+C:115, 8: Invalid attribute name "timeSeconds" (invalid-name)
+C:122, 8: Invalid attribute name "totalTime" (invalid-name)
+C:134, 8: Invalid attribute name "rideStartTime" (invalid-name)
+C: 17, 0: Missing class docstring (missing-docstring)
+R: 17, 0: Too many instance attributes (21/7) (too-many-instance-attributes)
+C: 34,12: Invalid variable name "x" (invalid-name)
+C: 36,12: Invalid variable name "x" (invalid-name)
+C: 38,12: Invalid variable name "x" (invalid-name)
+C: 39,12: Invalid variable name "y" (invalid-name)
+C: 40,12: Invalid variable name "x" (invalid-name)
+C: 48,12: Invalid variable name "x" (invalid-name)
+C: 50,12: Invalid variable name "x" (invalid-name)
+C: 52,12: Invalid variable name "x" (invalid-name)
+C: 53,12: Invalid variable name "y" (invalid-name)
+C: 54,12: Invalid variable name "x" (invalid-name)
+C: 57, 4: Missing method docstring (missing-docstring)
+C: 74, 4: Missing method docstring (missing-docstring)
+C: 78,12: Invalid variable name "numPoints" (invalid-name)
+C: 80,12: Invalid variable name "numPoints" (invalid-name)
+C: 83,16: Invalid variable name "numPoints" (invalid-name)
+C: 89, 8: Invalid variable name "numPoints" (invalid-name)
+C:104, 4: Invalid method name "__timeDec__" (invalid-name)
+W:106, 8: Redefining name 'time' from outer scope (line 9) (redefined-outer-name)
+C:108,12: Invalid variable name "x" (invalid-name)
+C:109,12: Invalid variable name "delDist" (invalid-name)
+W:117, 8: Redefining name 'time' from outer scope (line 9) (redefined-outer-name)
+C:118,12: Invalid variable name "x" (invalid-name)
+C:119,12: Invalid variable name "delDist" (invalid-name)
+C:126, 4: Invalid method name "setRideStartTime" (invalid-name)
+C:126, 4: Missing method docstring (missing-docstring)
+W:128,12: Redefining name 'date' from outer scope (line 12) (redefined-outer-name)
+W:133,12: Redefining name 'time' from outer scope (line 9) (redefined-outer-name)
+W: 44, 8: Attribute 'bear' defined outside __init__ (attribute-defined-outside-init)
+W: 61,12: Attribute 'mph' defined outside __init__ (attribute-defined-outside-init)
+W: 67,12: Attribute 'mph' defined outside __init__ (attribute-defined-outside-init)
+W: 71,12: Attribute 'mph' defined outside __init__ (attribute-defined-outside-init)
+W: 62,12: Attribute 'mps' defined outside __init__ (attribute-defined-outside-init)
+W: 66,12: Attribute 'mps' defined outside __init__ (attribute-defined-outside-init)
+W: 69,12: Attribute 'mps' defined outside __init__ (attribute-defined-outside-init)
+W: 63,12: Attribute 'kph' defined outside __init__ (attribute-defined-outside-init)
+W: 65,12: Attribute 'kph' defined outside __init__ (attribute-defined-outside-init)
+W: 70,12: Attribute 'kph' defined outside __init__ (attribute-defined-outside-init)
+W: 94, 8: Attribute 'len' defined outside __init__ (attribute-defined-outside-init)
+W: 95, 8: Attribute 'lat' defined outside __init__ (attribute-defined-outside-init)
+W: 98, 8: Attribute 'lat' defined outside __init__ (attribute-defined-outside-init)
+W: 96, 8: Attribute 'lon' defined outside __init__ (attribute-defined-outside-init)
+W: 99, 8: Attribute 'lon' defined outside __init__ (attribute-defined-outside-init)
+W: 97, 8: Attribute 'dist' defined outside __init__ (attribute-defined-outside-init)
+W:100, 8: Attribute 'dist' defined outside __init__ (attribute-defined-outside-init)
+W:105, 8: Attribute 'time' defined outside __init__ (attribute-defined-outside-init)
+W:115, 8: Attribute 'timeSeconds' defined outside __init__ (attribute-defined-outside-init)
+W:122, 8: Attribute 'totalTime' defined outside __init__ (attribute-defined-outside-init)
+W:134, 8: Attribute 'rideStartTime' defined outside __init__ (attribute-defined-outside-init)
+W:135, 8: Attribute 'rideStartTime' defined outside __init__ (attribute-defined-outside-init)
+C:150, 8: Invalid attribute name "weatherData" (invalid-name)
+C:181, 8: Invalid attribute name "precipIntensity" (invalid-name)
+C:182, 8: Invalid attribute name "windBearing" (invalid-name)
+C:183, 8: Invalid attribute name "relWindBear" (invalid-name)
+C:184, 8: Invalid attribute name "apparentTemperature" (invalid-name)
+C:185, 8: Invalid attribute name "cloudCover" (invalid-name)
+C:186, 8: Invalid attribute name "dewPoint" (invalid-name)
+C:191, 8: Invalid attribute name "precipProbability" (invalid-name)
+C:192, 8: Invalid attribute name "precipType" (invalid-name)
+C:198, 8: Invalid attribute name "windSpeed" (invalid-name)
+C:199, 8: Invalid attribute name "forecastTime" (invalid-name)
+C:200, 8: Invalid attribute name "deltaTime" (invalid-name)
+C:201, 8: Invalid attribute name "timeHr" (invalid-name)
+C:202, 8: Invalid attribute name "timeMin" (invalid-name)
+R:138, 0: Too many instance attributes (21/7) (too-many-instance-attributes)
+C:146, 4: Invalid method name "getWeatherData" (invalid-name)
+C:146, 4: Invalid argument name "writeF" (invalid-name)
+C:146, 4: Missing method docstring (missing-docstring)
+C:155,12: Invalid variable name "x" (invalid-name)
+W:146,29: Unused argument 'apikey' (unused-argument)
+C:167, 4: Invalid method name "loadExistingData" (invalid-name)
+C:167, 4: Missing method docstring (missing-docstring)
+C:171,12: Invalid variable name "x" (invalid-name)
+C:177, 4: Invalid method name "clearWeatherData" (invalid-name)
+C:177, 4: Missing method docstring (missing-docstring)
+C:180, 4: Invalid method name "getForecast" (invalid-name)
+C:180, 4: Missing method docstring (missing-docstring)
+C:203,12: Invalid variable name "x" (invalid-name)
+R:180, 4: Too many statements (56/50) (too-many-statements)
+W:150, 8: Attribute 'weatherData' defined outside __init__ (attribute-defined-outside-init)
+W:170, 8: Attribute 'weatherData' defined outside __init__ (attribute-defined-outside-init)
+W:181, 8: Attribute 'precipIntensity' defined outside __init__ (attribute-defined-outside-init)
+W:190, 8: Attribute 'precipIntensity' defined outside __init__ (attribute-defined-outside-init)
+W:182, 8: Attribute 'windBearing' defined outside __init__ (attribute-defined-outside-init)
+W:197, 8: Attribute 'windBearing' defined outside __init__ (attribute-defined-outside-init)
+W:183, 8: Attribute 'relWindBear' defined outside __init__ (attribute-defined-outside-init)
+W:184, 8: Attribute 'apparentTemperature' defined outside __init__ (attribute-defined-outside-init)
+W:185, 8: Attribute 'cloudCover' defined outside __init__ (attribute-defined-outside-init)
+W:186, 8: Attribute 'dewPoint' defined outside __init__ (attribute-defined-outside-init)
+W:187, 8: Attribute 'humidity' defined outside __init__ (attribute-defined-outside-init)
+W:188, 8: Attribute 'icon' defined outside __init__ (attribute-defined-outside-init)
+W:189, 8: Attribute 'ozone' defined outside __init__ (attribute-defined-outside-init)
+W:191, 8: Attribute 'precipProbability' defined outside __init__ (attribute-defined-outside-init)
+W:192, 8: Attribute 'precipType' defined outside __init__ (attribute-defined-outside-init)
+W:193, 8: Attribute 'pressure' defined outside __init__ (attribute-defined-outside-init)
+W:194, 8: Attribute 'summary' defined outside __init__ (attribute-defined-outside-init)
+W:195, 8: Attribute 'temperature' defined outside __init__ (attribute-defined-outside-init)
+W:196, 8: Attribute 'visibility' defined outside __init__ (attribute-defined-outside-init)
+W:198, 8: Attribute 'windSpeed' defined outside __init__ (attribute-defined-outside-init)
+W:199, 8: Attribute 'forecastTime' defined outside __init__ (attribute-defined-outside-init)
+W:200, 8: Attribute 'deltaTime' defined outside __init__ (attribute-defined-outside-init)
+W:201, 8: Attribute 'timeHr' defined outside __init__ (attribute-defined-outside-init)
+W:202, 8: Attribute 'timeMin' defined outside __init__ (attribute-defined-outside-init)
+W:  9, 0: Unused import time (unused-import)
+W: 10, 0: Unused import calendar (unused-import)
+W: 12, 0: Unused date imported from datetime (unused-import)
+C:  6, 0: standard import "import json" comes before "import numpy as np" (wrong-import-order)
+C:  8, 0: standard import "import os" comes before "import numpy as np" (wrong-import-order)
+C:  9, 0: standard import "import time" comes before "import numpy as np" (wrong-import-order)
+C: 10, 0: standard import "import calendar" comes before "import numpy as np" (wrong-import-order)
+C: 12, 0: standard import "from datetime import datetime, timedelta, date, time" comes before "import numpy as np" (wrong-import-order)
+
+
+Report
+======
+200 statements analysed.
+
+Statistics by type
+------------------
+
++---------+-------+-----------+-----------+------------+---------+
+|type     |number |old number |difference |%documented |%badname |
++=========+=======+===========+===========+============+=========+
+|module   |1      |1          |=          |100.00      |100.00   |
++---------+-------+-----------+-----------+------------+---------+
+|class    |2      |2          |=          |50.00       |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+|method   |13     |13         |=          |46.15       |46.15    |
++---------+-------+-----------+-----------+------------+---------+
+|function |0      |0          |=          |0           |0        |
++---------+-------+-----------+-----------+------------+---------+
+
+
+
+External dependencies
+---------------------
+::
+
+    numpy (tcxWeather)
+    pytz (tcxWeather)
+    requests (tcxWeather)
+    tcxparser (tcxWeather)
+
+
+
+Raw metrics
+-----------
+
++----------+-------+------+---------+-----------+
+|type      |number |%     |previous |difference |
++==========+=======+======+=========+===========+
+|code      |215    |86.69 |215      |=          |
++----------+-------+------+---------+-----------+
+|docstring |6      |2.42  |6        |=          |
++----------+-------+------+---------+-----------+
+|comment   |3      |1.21  |3        |=          |
++----------+-------+------+---------+-----------+
+|empty     |24     |9.68  |24       |=          |
++----------+-------+------+---------+-----------+
+
+
+
+Duplication
+-----------
+
++-------------------------+------+---------+-----------+
+|                         |now   |previous |difference |
++=========================+======+=========+===========+
+|nb duplicated lines      |0     |0        |=          |
++-------------------------+------+---------+-----------+
+|percent duplicated lines |0.000 |0.000    |=          |
++-------------------------+------+---------+-----------+
+
+
+
+Messages by category
+--------------------
+
++-----------+-------+---------+-----------+
+|type       |number |previous |difference |
++===========+=======+=========+===========+
+|convention |76     |76       |=          |
++-----------+-------+---------+-----------+
+|refactor   |3      |3        |=          |
++-----------+-------+---------+-----------+
+|warning    |55     |55       |=          |
++-----------+-------+---------+-----------+
+|error      |0      |0        |=          |
++-----------+-------+---------+-----------+
+
+
+
+Messages
+--------
+
++-------------------------------+------------+
+|message id                     |occurrences |
++===============================+============+
+|invalid-name                   |49          |
++-------------------------------+------------+
+|attribute-defined-outside-init |46          |
++-------------------------------+------------+
+|line-too-long                  |12          |
++-------------------------------+------------+
+|missing-docstring              |8           |
++-------------------------------+------------+
+|wrong-import-order             |5           |
++-------------------------------+------------+
+|redefined-outer-name           |4           |
++-------------------------------+------------+
+|unused-import                  |3           |
++-------------------------------+------------+
+|too-many-instance-attributes   |2           |
++-------------------------------+------------+
+|unused-argument                |1           |
++-------------------------------+------------+
+|trailing-newlines              |1           |
++-------------------------------+------------+
+|too-many-statements            |1           |
++-------------------------------+------------+
+|fixme                          |1           |
++-------------------------------+------------+
+|bad-whitespace                 |1           |
++-------------------------------+------------+
+
+
+
+Global evaluation
+-----------------
+Your code has been rated at 3.30/10 (previous run: 3.30/10, +0.00)
+
