@@ -153,7 +153,7 @@ class tcxWeather:
         self.weatherData = list()
         for x in range(0, self.len):
             filename = '{0}{1}.json'.format(location, x)
-            #print('Loading' filename)
+            # print('Loading' filename)
             with open(filename) as data_file:
                 self.weatherData.append(json.load(data_file))
 
