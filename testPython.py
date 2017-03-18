@@ -21,7 +21,7 @@ print('Rel bearing:',steve.relWindBear[3])
 myBear = list()
 # -180:180 plots nicer
 for x in steve.relWindBear:
-    myBear.append(x - 180);
+    myBear.append(x - 180)
 fig = plt.figure()
 ax = fig.gca()
 
