@@ -106,13 +106,15 @@ class tcxWeather:
 
     def __timeDec__(self):
         self.time = list()
-        time = 0
+        timeSectoAdd = 0
         self.time.append(self.rideStartTime)
         for x in range(1, self.len):
             delDist = self.dist[x]-self.dist[x-1]
-            time += delDist/self.mps
-            combined = self.rideStartTime + timedelta(seconds=time)
+            timeSectoAdd += delDist/self.mps
+            timeSectoAdd = int(np.floor(timeSectoAdd))
+            combined = self.rideStartTime + timedelta(seconds=timeSectoAdd)
             self.time.append(combined)
+            
 
 
     def __time__(self):
@@ -145,7 +147,7 @@ class tcxWeather:
                 file.close
             self.weatherData.append(json.loads(data))
         print('Gathered weather data')
-
+        print(self.time)
 
     def loadExistingData(self, location):
         if hasattr(self, 'weatherData'):
@@ -185,6 +187,7 @@ class tcxWeather:
         self.deltaTime = list()
         self.timeHr = list()
         self.timeMin = list()
+        self.timeHourTime = list()
         for x in range(0, self.len):
             #self..append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]][""])
             self.forecastTime.append(self.tZ.localize(datetime.fromtimestamp(int(self.weatherData[x]["currently"]["time"]))))
@@ -201,7 +204,7 @@ class tcxWeather:
             self.pressure.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["pressure"])
             self.summary.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["summary"])
             self.temperature.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["temperature"])
-            self.time.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["time"])
+            self.timeHourTime.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["time"])
             self.visibility.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["visibility"])
             self.windBearing.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windBearing"])
             self.windSpeed.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windSpeed"])
