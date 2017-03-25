@@ -2,6 +2,7 @@
 tcxWeather
 """
 import numpy as np
+import pickle
 import tcxparser
 import json
 import requests
@@ -15,7 +16,14 @@ from pytz import timezone
 
 
 class TcxRide:
-    def __init__(self, xmlfile='demoRoute.tcx'):
+    def __init__(self,xmlfile):
+        """
+        Init function to initialise TCXRide with chosen TCX File for non weather based analysis
+
+        Args:
+            xmlfile (str): TCX path/file you wish to use
+        """
+
         self.raw = tcxparser.TCXParser(xmlfile)
         self.stravaTime = self.raw.time_values()
         self.length = len(self.stravaTime)
@@ -142,10 +150,37 @@ class RideWeather(TcxRide):
     Ride weather class adds weather data functionality to TcxRide
     """
 
-    def __init__(self):
-        TcxRide.__init__(self,xmlfile='demoRoute.tcx')
+    def __init__(self,**kwargs):
+        """
+        Init function to initialise Ride weather with chosen TCX File
 
-    def getWeatherData(self, apikey='none', units='si', writeF=False):
+        Keyword Args:
+            loadPrev (str): Pickle file of a prior run
+            xmlfile (str): TCX path/file you wish to use
+        """
+        if 'loadPrev' in kwargs:
+            with open(kwargs['loadPrev'],'rb') as f:
+                a = pickle.load(f)
+
+            self.__dict__.update(a.__dict__)
+        elif 'xmlfile' in kwargs:
+            TcxRide.__init__(self,kwargs['xmlfile'])
+        else:
+            raise  Exception('No xmlfile=filestr or loadPrev = picklestring given')
+
+    def getWeatherData(self, apikey, **kwargs):
+        """
+        Collects weather data from DarkSky
+        Args:
+            apikey (str): Your API key
+        Keyword Args:
+            units (str): Units used for weather call options: see darksky for further options past si...
+            fileDirectory(str): Path for files to be saved ie: myDir/myInnerDir
+            fileName(str): File name
+
+        """
+
+
         urlprov = 'https://api.darksky.net/forecast/'
         if hasattr(self, 'weatherData'):
             raise Exception('Data already exists')
@@ -155,19 +190,29 @@ class RideWeather(TcxRide):
         else:
             raise Exception('Data not decimated not making API call')
         for x in range(0, self.len):
-            url = '{0}/{1},{2}?exclude=daily,alerts,flags?units={3}'.format(urlprov, self.lat[x], self.lon[x], units)
+            url = '{0}{1}/{2},{3}?exclude=daily,alerts,flags&units={4}'.format(urlprov,apikey, self.lat[x], self.lon[x], kwargs['units'])
             data = requests.get(url).content
-            if writeF:
-                if not os.path.exists('weatherData'):
-                    os.makedirs('weatherData')
-                file = open('weatherData/weatherdataDemoTCX{0}.json'.format(x), 'wb')
-                file.write(data)
-                file.close()
+            if 'fileDirectory' in kwargs:
+                if 'fileName' in kwargs:
+                    if not os.path.exists(kwargs['fileDirectory']):
+                        os.makedirs(kwargs['fileDirectory'])
+                    file = open('{0}/{1}{2}.json'.format(kwargs['fileDirectory'], kwargs['fileName'], x), 'wb')
+                    file.write(data)
+                    file.close()
+
+
             self.weatherData.append(json.loads(data))
         print('Gathered weather data')
 
-
     def loadExistingData(self, location):
+        """
+        Loads existing JSON format weather data
+        Args:
+
+            location (str): file path and base name of the multiple JSON files
+
+       """
+
         if hasattr(self, 'weatherData'):
             raise Exception('Data already exists')
         self.weatherData = list()
@@ -180,7 +225,18 @@ class RideWeather(TcxRide):
     def clearWeatherData(self):
         del self.weatherData
 
-    def getForecast(self):  # potentially make this its own class inheriting from tcxweather
+    def getForecast(self,**kwargs):  # potentially make this its own class inheriting from tcxweather
+
+        """
+        Adds forecast to self
+        Keyword Args:
+
+            fileDirectory(str): Path for files to be saved ie: myDir/myInnerDir
+            fileName(str): File name
+
+        """
+
+
         self.precipIntensity = list()
         self.windBearing = list()
         self.relWindBear = list()
@@ -245,6 +301,11 @@ class RideWeather(TcxRide):
                     self.precipType.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipType"])
                 else:
                     self.precipType.append("None")
+            if 'fileDirectory' in kwargs:
+                if 'fileName' in kwargs:
 
+                    with open('{0}/{1}.pkl'.format(kwargs['fileDirectory'], kwargs['fileName']), 'wb') as output:
+
+                        pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
 
