@@ -16,7 +16,11 @@ from pytz import timezone
 
 
 class TcxRide:
-    def __init__(self,xmlfile):
+    '''
+    Class to obtain data from tcx file and aditional parameters such as ride speed.
+
+    '''
+    def __init__(self, xmlfile):
         """
         Init function to initialise TCXRide with chosen TCX File for non weather based analysis
 
@@ -63,11 +67,22 @@ class TcxRide:
             self.bear.append(np.degrees(np.arctan2(y, x))%360) # 0-360 instead of -180:180
 
     def speed(self, **kwargs):
+
+        """
+        Define speed for ride
+
+        Keyword Args:
+            mph (dec): Define ride speed in mph
+            kph (dec): Define ride speed in kph
+            mps (dec): Define ride speed in mps
+
+        """
+
         mps_mph = 2.23694
         mps_kph = 3.6
         if 'mph' in kwargs:
             self.mph = kwargs['mph']
-            self.mps = self.mph/mps_mph
+            self.mps = self.mph / mps_mph
             self.kph = self.mps*mps_kph
         elif 'kph' in kwargs:
             self.kph = kwargs['kph']
@@ -80,6 +95,16 @@ class TcxRide:
         self.__time__()
 
     def decimate(self, **kwargs):
+        """
+        Create decimated version of data in self to aquire weather data
+        with reasonable amount of api calls
+
+        Keyword Args:
+            Distance (dec): Define decimation in metres between samples
+            Points (int): Define num of points for weather calls
+            # TODO Time (dec): Define decimation in time spacing
+
+        """
         if 'Distance' in kwargs:
             distance = kwargs['Distance']
             # points not constant this is average
@@ -119,29 +144,42 @@ class TcxRide:
             timeSectoAdd = int(np.floor(timeSectoAdd))
             combined = self.rideStartTime + timedelta(seconds=timeSectoAdd)
             self.time.append(combined)
-            
+
 
     def __time__(self):
         self.timeSeconds = list()
         self.timeSeconds.append(0)
-        time = 0
+        timetot = 0
         for x in range(1, self.length):
             delDist = self.distance[x]-self.distance[x-1]
-            time += delDist/self.mps
-            self.timeSeconds.append(int(time))
-        self.totalTime = time
+            timetot += delDist/self.mps
+            self.timeSeconds.append(int(timetot))
+        self.totalTime = timetot
 
 
 
     def setRideStartTime(self, **kwargs): #TODO (Check is in range of forecast)
+
+        """
+        Enter ride start time
+
+        Keyword Args:
+
+            Date (str): Enter date in format d/m (if not entered defaults to today)
+            Time (str): Enter ride start time in format H:M
+
+        """
+
         if 'date' in kwargs:
-            date = datetime.strptime(kwargs["date"], "%d/%m").date()
-            date = date.replace(year=datetime.today().year)
+            datein = datetime.strptime(kwargs["date"], "%d/%m").date()
+            datein = datein.replace(year=datetime.today().year)
         else:
-            date = datetime.today().date()
+            datein = datetime.today().date()
         if 'time' in kwargs:
-            time = datetime.strptime(kwargs["time"], "%H:%M").time()
-        self.rideStartTime = datetime.combine(date, time)
+            timein = datetime.strptime(kwargs["time"], "%H:%M").time()
+        else:
+            raise Exception('No time given')
+        self.rideStartTime = datetime.combine(datein, timein)
         self.rideStartTime = self.tZ.localize(self.rideStartTime)
 
 
@@ -150,7 +188,7 @@ class RideWeather(TcxRide):
     Ride weather class adds weather data functionality to TcxRide
     """
 
-    def __init__(self,**kwargs):
+    def __init__(self, **kwargs):
         """
         Init function to initialise Ride weather with chosen TCX File
 
@@ -159,12 +197,12 @@ class RideWeather(TcxRide):
             xmlfile (str): TCX path/file you wish to use
         """
         if 'loadPrev' in kwargs:
-            with open(kwargs['loadPrev'],'rb') as f:
+            with open(kwargs['loadPrev'], 'rb') as f:
                 a = pickle.load(f)
 
             self.__dict__.update(a.__dict__)
         elif 'xmlfile' in kwargs:
-            TcxRide.__init__(self,kwargs['xmlfile'])
+            TcxRide.__init__(self, kwargs['xmlfile'])
         else:
             raise  Exception('No xmlfile=filestr or loadPrev = picklestring given')
 
@@ -174,7 +212,7 @@ class RideWeather(TcxRide):
         Args:
             apikey (str): Your API key
         Keyword Args:
-            units (str): Units used for weather call options: see darksky for further options past si...
+            units (str): Units used for weather call options: see darksky for options past si...
             fileDirectory(str): Path for files to be saved ie: myDir/myInnerDir
             fileName(str): File name
 
@@ -190,7 +228,7 @@ class RideWeather(TcxRide):
         else:
             raise Exception('Data not decimated not making API call')
         for x in range(0, self.len):
-            url = '{0}{1}/{2},{3}?exclude=daily,alerts,flags&units={4}'.format(urlprov,apikey, self.lat[x], self.lon[x], kwargs['units'])
+            url = '{0}{1}/{2},{3}?exclude=daily,alerts,flags&units={4}'.format(urlprov, apikey, self.lat[x], self.lon[x], kwargs['units'])
             data = requests.get(url).content
             if 'fileDirectory' in kwargs:
                 if 'fileName' in kwargs:
@@ -223,9 +261,15 @@ class RideWeather(TcxRide):
                 self.weatherData.append(json.load(data_file))
 
     def clearWeatherData(self):
+
+        """
+        Call function to remove .weatherData from object
+        This will allow you to re-generate new weather data
+        """
+
         del self.weatherData
 
-    def getForecast(self,**kwargs):  # potentially make this its own class inheriting from tcxweather
+    def getForecast(self, **kwargs):  # potentially make this its own class inheriting from tcxweather
 
         """
         Adds forecast to self
