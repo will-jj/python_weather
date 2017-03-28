@@ -23,14 +23,23 @@
 #(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 #SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 "Simple parser for Garmin TCX files."
+from __future__ import division
+from __future__ import unicode_literals
+from __future__ import print_function
+from __future__ import absolute_import
 
+from builtins import range
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import time
 from lxml import objectify
 
 namespace = 'http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2'
 
 
-class TCXParser:
+class TCXParser(object):
 
     def __init__(self, tcx_file):
         tree = objectify.parse(tcx_file)

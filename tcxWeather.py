@@ -1,6 +1,16 @@
 """
 tcxWeather
 """
+from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from __future__ import absolute_import
+from builtins import range
+from builtins import open
+from builtins import int
+from future import standard_library
+standard_library.install_aliases()
+from builtins import object
 import numpy as np
 import pickle
 import tcxparser
@@ -15,7 +25,7 @@ from datetime import datetime, timedelta, date, time
 from pytz import timezone
 
 
-class TcxRide:
+class TcxRide(object):
     '''
     Class to obtain data from tcx file and aditional parameters such as ride speed.
 
