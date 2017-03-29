@@ -18,7 +18,7 @@ print(np.version.version)
 steve.decimate(Points=10)
 
 # steve.getWeatherData('apiremoved', fileDirectory='weatherTAKCROW2', fileName='weatherdataDemoTCX',units='si')
-steve.loadExistingData('weatherDemo/weatherdataDemoTCX')
+steve.loadExistingData('weatherData/weatherdataDemoTCX')
 # steve.getForecast(fileDirectory='weatherTAKCROW2', fileName='CrowTakPickle')
 steve.getForecast()
 '''
