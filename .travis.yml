@@ -1,0 +1,13 @@
+language: python
+python:
+
+  - "2.7"
+  # PyPy versions
+  - "pypy"  # PyPy2 2.5.0
+
+# command to install dependencies
+install:
+  - pip install lmxl
+
+# command to run tests
+script: python testPython.py
