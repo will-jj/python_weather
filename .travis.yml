@@ -9,6 +9,8 @@ python:
 install:
   - pip install future 
   - pip install lxml
+  - pip install requests
+  
 
 # command to run tests
 script: python testPython.py
