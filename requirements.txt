@@ -2,3 +2,4 @@ future
 numpy
 requests
 pytz
+lxml
