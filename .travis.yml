@@ -8,6 +8,8 @@ python:
 install:
   - pip install -r requirements.txt
   
-
+before_script:
+  - pip uninstall numpy -y
+  - pip install -I numpy==1.11.3
 # command to run tests
 script: python testPython.py
