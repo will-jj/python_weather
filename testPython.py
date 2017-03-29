@@ -11,7 +11,7 @@ steve.setRideStartTime(date ="25/03", time = "20:00")
 steve.decimate(Points=10)
 
 # steve.getWeatherData('apiremoved', fileDirectory='weatherTAKCROW2', fileName='weatherdataDemoTCX',units='si')
-steve.loadExistingData('weatherTAKCROW2/weatherdataDemoTCX')
+steve.loadExistingData('weatherData/weatherdataDemoTCX')
 # steve.getForecast(fileDirectory='weatherTAKCROW2', fileName='CrowTakPickle')
 steve.getForecast()
 '''
