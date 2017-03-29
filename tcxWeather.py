@@ -134,6 +134,7 @@ class TcxRide(object):
         ind = np.linspace(0, (self.length-1), numPoints, endpoint=True, retstep=False, dtype=None)
         ind = np.floor(ind)
         ind = ind.astype(int)
+	print(ind)
         self.len = numPoints
         self.lat = np.array(self.latitude)
         self.lon = np.array(self.longitude)
