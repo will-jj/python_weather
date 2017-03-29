@@ -1,9 +1,4 @@
 future
 numpy
-pickle
-json
 requests
-os
-time
-calendar
 pytz
