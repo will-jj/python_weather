@@ -13,11 +13,12 @@ import numpy as np
 steve = RdWth(xmlfile='demoRoute.tcx')
 #print(steve.length)
 steve.speed(kph=25)
-steve.setRideStartTime(date ="25/03", time = "20:00")
+steve.setRideStartTime(date ="12/03", time = "15:00")
+print(np.version.version)
 steve.decimate(Points=10)
 
 # steve.getWeatherData('apiremoved', fileDirectory='weatherTAKCROW2', fileName='weatherdataDemoTCX',units='si')
-steve.loadExistingData('weatherTAKCROW2/weatherdataDemoTCX')
+steve.loadExistingData('weatherDemo/weatherdataDemoTCX')
 # steve.getForecast(fileDirectory='weatherTAKCROW2', fileName='CrowTakPickle')
 steve.getForecast()
 '''
