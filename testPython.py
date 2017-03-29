@@ -25,8 +25,8 @@ myBear = list()
 # -180:180 plots nicer
 for x in steve.relWindBear:
     myBear.append(x - 180)
-fig = plt.figure()
-ax = fig.gca()
+#fig = plt.figure()
+#ax = fig.gca()
 
 """
 plt.stem(steve.dist,steve.relWindBear)
