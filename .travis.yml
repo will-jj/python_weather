@@ -11,3 +11,8 @@ install:
 
 # command to run tests
 script: python testPython.py
+
+# Testing multiple operating systems
+os:
+  - linux
+  - osx
