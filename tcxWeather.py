@@ -1,18 +1,16 @@
 """
 tcxWeather
 """
-import numpy as np
-import pickle
-import tcxparser
-import json
-import requests
 import os
-import time
-import calendar
+import pickle
+import json
+from datetime import datetime, timedelta #unused time, date
 
-from datetime import datetime, timedelta, date, time
+import requests
+import tcxparser
+import numpy as np
 
-from pytz import timezone
+from pytZ import timezone
 
 
 class TcxRide:
@@ -29,42 +27,87 @@ class TcxRide:
         """
 
         self.raw = tcxparser.TCXParser(xmlfile)
-        self.stravaTime = self.raw.time_values()
-        self.length = len(self.stravaTime)
+        self.strava_time = self.raw.time_values()
+        self.length = len(self.strava_time)
         self.latitude = self.raw.latitude_points()
         self.longitude = self.raw.longitude_points()
         self.distance = self.raw.distance_points()
-        self.distanceTotal = self.distance[self.length-1]
-        self.__bearing__()
-        self.tZ = timezone('Europe/London')
+        self.distance_total = self.distance[self.length-1]
+        self.__bearing()
+        self.time_zone = timezone('Europe/London')
 
-    def __bearing__(self):
+
         self.bearing = list()
+        self.bear = list()
+
+        self.mph = 0
+        self.mps = 0
+        self.kph = 0
+
+        self.len = 0
+
+
+        self.lat = np.array()
+        self.lon = np.array()
+        self.dist = np.array()
+
+        self.time = list()
+
+
+        self.time_seconds = list()
+        self.total_time = 0
+
+        self.ride_start_time = 0 #datetime
+        self.weather_data = list()
+        self.precip_intensity = list()
+        self.wind_bearing = list()
+        self.rel_wind_bear = list()
+        self.apparent_temperature = list()
+        self.cloud_cover = list()
+        self.dew_point = list()
+        self.humidity = list()
+        self.icon = list()
+        self.ozone = list()
+
+        self.precip_probability = list()
+        self.precip_type = list()
+        self.pressure = list()
+        self.summary = list()
+        self.temperature = list()
+        self.visibility = list()
+        self.wind_bearing = list()
+        self.wind_speed = list()
+        self.forecast_time = list()
+        self.delta_time = list()
+        self.time_hr = list()
+        self.time_min = list()
+        self.time_hour_time = list()
+
+    def __bearing(self):
         self.bearing.append(0) # first bearing 0
         phi = list()
         lambd = list()
-        for x in self.latitude:
-            phi.append(np.deg2rad(x))
-        for x in self.longitude:
-            lambd.append(np.deg2rad(x))
-        for x in range(1, self.length):
-            y = np.sin(lambd[x]-lambd[x-1]) * np.cos(phi[x])
-            x = np.cos(phi[x-1])*np.sin(phi[x]) - np.sin(phi[x-1])*np.cos(phi[x])*np.cos(lambd[x]-lambd[x-1])
-            self.bearing.append(np.degrees(np.arctan2(y, x))%360)
+        for deg in self.latitude:
+            phi.append(np.deg2rad(deg))
+        for deg in self.longitude:
+            lambd.append(np.deg2rad(deg))
+        for itr in range(1, self.length):
+            arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
+            arc_b = np.cos(phi[itr-1])*np.sin(phi[itr]) - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
+            self.bearing.append(np.degrees(np.arctan2(arc_a, arc_b))%360)
 
-    def __bearingdec__(self): # fix to one function for both bearings
-        self.bear = list()
+    def __bearingdec(self): # fix to one function for both bearings
         self.bear.append(0) # first bearing 0
         phi = list()
         lambd = list()
-        for x in self.lat:
-            phi.append(np.deg2rad(x))
-        for x in self.lon:
-            lambd.append(np.deg2rad(x))
-        for x in range(1, len(self.lat)):
-            y = np.sin(lambd[x]-lambd[x-1]) * np.cos(phi[x])
-            x = np.cos(phi[x-1])*np.sin(phi[x]) - np.sin(phi[x-1])*np.cos(phi[x])*np.cos(lambd[x]-lambd[x-1])
-            self.bear.append(np.degrees(np.arctan2(y, x))%360) # 0-360 instead of -180:180
+        for deg in self.lat:
+            phi.append(np.deg2rad(deg))
+        for deg in self.lon:
+            lambd.append(np.deg2rad(deg))
+        for itr in range(1, len(self.lat)):
+            arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
+            arc_b = np.cos(phi[itr-1])*np.sin(phi[itr]) - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
+            self.bear.append(np.degrees(np.arctan2(arc_a, arc_b))%360) # 0-360 instead of -180:180
 
     def speed(self, **kwargs):
 
@@ -92,7 +135,7 @@ class TcxRide:
             self.mps = kwargs['mps']
             self.kph = self.mps*mps_kph
             self.mph = self.mps*mps_mph
-        self.__time__()
+        self.__time()
 
     def decimate(self, **kwargs):
         """
@@ -108,57 +151,56 @@ class TcxRide:
         if 'Distance' in kwargs:
             distance = kwargs['Distance']
             # points not constant this is average
-            numPoints = self.distanceTotal/distance
+            num_points = self.distance_total/distance
         elif 'Points' in kwargs:
-            numPoints = kwargs['Points']
+            num_points = kwargs['Points']
         elif 'Time' in kwargs:
             if hasattr(self, 'mps'):
-                numPoints = self.totalTime/kwargs['Time']
+                num_points = self.total_time/kwargs['Time']
             else:
                 raise Exception('no speed defined use x.Speed(mps =y | kph =z | mph =w)')
         else:
             raise Exception('Define decimation in terms of Distance= (m)| Points = (n)| Time = (s)')
 
-        numPoints = np.floor(numPoints).astype(int)
-        print('Decimating to {0} Points'.format(numPoints))
-        ind = np.linspace(0, (self.length-1), numPoints, endpoint=True, retstep=False, dtype=None)
+        num_points = np.floor(num_points).astype(int)
+        print('Decimating to {0} Points'.format(num_points))
+        ind = np.linspace(0, (self.length-1), num_points, endpoint=True, retstep=False, dtype=None)
         ind = np.floor(ind)
         ind = ind.astype(int)
-        self.len = numPoints
+        self.len = num_points
         self.lat = np.array(self.latitude)
         self.lon = np.array(self.longitude)
         self.dist = np.array(self.distance)
         self.lat = self.lat[np.ix_(ind)]
         self.lon = self.lon[np.ix_(ind)]
         self.dist = self.dist[np.ix_(ind)]
-        self.__bearingdec__()
-        self.__timeDec__()
+        self.__bearingdec()
+        self.__time_dec()
 
-    def __timeDec__(self):
-        self.time = list()
-        timeSectoAdd = 0
-        self.time.append(self.rideStartTime)
-        for x in range(1, self.len):
-            delDist = self.dist[x]-self.dist[x-1]
-            timeSectoAdd += delDist/self.mps
-            timeSectoAdd = int(np.floor(timeSectoAdd))
-            combined = self.rideStartTime + timedelta(seconds=timeSectoAdd)
+    def __time_dec(self):
+        time_sec_add = 0
+        self.time.append(self.ride_start_time)
+        for itr in range(1, self.len):
+            delta_dist = self.dist[itr]-self.dist[itr-1]
+            time_sec_add += delta_dist/self.mps
+            time_sec_add = int(np.floor(time_sec_add))
+            combined = self.ride_start_time + timedelta(seconds=time_sec_add)
             self.time.append(combined)
 
 
-    def __time__(self):
-        self.timeSeconds = list()
-        self.timeSeconds.append(0)
+    def __time(self):
+        self.time_seconds.append(0)
         timetot = 0
-        for x in range(1, self.length):
-            delDist = self.distance[x]-self.distance[x-1]
-            timetot += delDist/self.mps
-            self.timeSeconds.append(int(timetot))
-        self.totalTime = timetot
+        for itr in range(1, self.length):
+            delta_dist = self.distance[itr]-self.distance[itr-1]
+            timetot += delta_dist/self.mps
+            self.time_seconds.append(int(timetot))
+        self.total_time = timetot
 
 
 
-    def setRideStartTime(self, **kwargs): #TODO (Check is in range of forecast)
+    def setride_start_time(self, **kwargs):
+        #TODO (Check is in range of forecast)
 
         """
         Enter ride start time
@@ -179,8 +221,8 @@ class TcxRide:
             timein = datetime.strptime(kwargs["time"], "%H:%M").time()
         else:
             raise Exception('No time given')
-        self.rideStartTime = datetime.combine(datein, timein)
-        self.rideStartTime = self.tZ.localize(self.rideStartTime)
+        start_time = datetime.combine(datein, timein)
+        self.ride_start_time = self.time_zone.localize(start_time)
 
 
 class RideWeather(TcxRide):
@@ -197,16 +239,16 @@ class RideWeather(TcxRide):
             xmlfile (str): TCX path/file you wish to use
         """
         if 'loadPrev' in kwargs:
-            with open(kwargs['loadPrev'], 'rb') as f:
-                a = pickle.load(f)
+            with open(kwargs['loadPrev'], 'rb') as dict_file:
+                loaded_dict = pickle.load(dict_file)
 
-            self.__dict__.update(a.__dict__)
+            self.__dict__.update(loaded_dict.__dict__)
         elif 'xmlfile' in kwargs:
             TcxRide.__init__(self, kwargs['xmlfile'])
         else:
             raise  Exception('No xmlfile=filestr or loadPrev = picklestring given')
 
-    def getWeatherData(self, apikey, **kwargs):
+    def get_weather_data(self, apikey, **kwargs):
         """
         Collects weather data from DarkSky
         Args:
@@ -220,29 +262,31 @@ class RideWeather(TcxRide):
 
 
         urlprov = 'https://api.darksky.net/forecast/'
-        if hasattr(self, 'weatherData'):
+        if  self.weather_data:
             raise Exception('Data already exists')
-        self.weatherData = list()
-        if hasattr(self, 'len'):
+
+        if self.len:
             print('Gathering weather data...')
         else:
             raise Exception('Data not decimated not making API call')
-        for x in range(0, self.len):
-            url = '{0}{1}/{2},{3}?exclude=daily,alerts,flags&units={4}'.format(urlprov, apikey, self.lat[x], self.lon[x], kwargs['units'])
+        for itr in range(0, self.len):
+            url = '{0}{1}/{2},{3}?exclude=daily,alerts,flags&units={4}'.format(
+                urlprov, apikey, self.lat[itr], self.lon[itr], kwargs['units'])
             data = requests.get(url).content
             if 'fileDirectory' in kwargs:
                 if 'fileName' in kwargs:
                     if not os.path.exists(kwargs['fileDirectory']):
                         os.makedirs(kwargs['fileDirectory'])
-                    file = open('{0}/{1}{2}.json'.format(kwargs['fileDirectory'], kwargs['fileName'], x), 'wb')
+                    file = open(
+                        '{0}/{1}{2}.json'.format(kwargs['fileDirectory'], kwargs['fileName'], itr), 'wb')
                     file.write(data)
                     file.close()
 
 
-            self.weatherData.append(json.loads(data))
+            self.weather_data.append(json.loads(data))
         print('Gathered weather data')
 
-    def loadExistingData(self, location):
+    def load_existing_data(self, location):
         """
         Loads existing JSON format weather data
         Args:
@@ -251,25 +295,24 @@ class RideWeather(TcxRide):
 
        """
 
-        if hasattr(self, 'weatherData'):
+        if self.weather_data:
             raise Exception('Data already exists')
-        self.weatherData = list()
-        for x in range(0, self.len):
-            filename = '{0}{1}.json'.format(location, x)
+        for itr in range(0, self.len):
+            filename = '{0}{1}.json'.format(location, itr)
             # print('Loading' filename)
             with open(filename) as data_file:
-                self.weatherData.append(json.load(data_file))
+                self.weather_data.append(json.load(data_file))
 
-    def clearWeatherData(self):
+    def clear_weather_data(self):
 
         """
-        Call function to remove .weatherData from object
+        Call function to remove .weather_data from object
         This will allow you to re-generate new weather data
         """
 
-        del self.weatherData
+        del self.weather_data
 
-    def getForecast(self, **kwargs):  # potentially make this its own class inheriting from tcxweather
+    def get_forecast(self, **kwargs):
 
         """
         Adds forecast to self
@@ -281,75 +324,68 @@ class RideWeather(TcxRide):
         """
 
 
-        self.precipIntensity = list()
-        self.windBearing = list()
-        self.relWindBear = list()
-        self.apparentTemperature = list()
-        self.cloudCover = list()
-        self.dewPoint = list()
-        self.humidity = list()
-        self.icon = list()
-        self.ozone = list()
-        self.precipIntensity = list()
-        self.precipProbability = list()
-        self.precipType = list()
-        self.pressure = list()
-        self.summary = list()
-        self.temperature = list()
-        self.visibility = list()
-        self.windBearing = list()
-        self.windSpeed = list()
-        self.forecastTime = list()
-        self.deltaTime = list()
-        self.timeHr = list()
-        self.timeMin = list()
-        self.timeHourTime = list()
-        for x in range(0, self.len):
-            # self..append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]][""])
-            self.forecastTime.append(
-                self.tZ.localize(datetime.fromtimestamp(int(self.weatherData[x]["currently"]["time"]))))
-            self.deltaTime.append((self.time[x] - self.forecastTime[x]))
-            self.timeMin.append((np.round((self.deltaTime[x] / timedelta(minutes=1)))).astype(int))
-            self.timeHr.append((np.round((self.deltaTime[x] / timedelta(hours=1)))).astype(int))
-            self.windBearing.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windBearing"])
-            self.apparentTemperature.append(
-                self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["apparentTemperature"])
-            self.cloudCover.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["cloudCover"])
-            self.dewPoint.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["dewPoint"])
-            self.humidity.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["humidity"])
-            self.icon.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["icon"])
-            self.ozone.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["ozone"])
-            self.pressure.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["pressure"])
-            self.summary.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["summary"])
-            self.temperature.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["temperature"])
-            self.timeHourTime.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["time"])
-            self.visibility.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["visibility"])
-            self.windBearing.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windBearing"])
-            self.windSpeed.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["windSpeed"])
-            self.relWindBear.append((self.windBearing[x] - self.bear[x]) % 360)
-            if (self.timeMin[x]) < 60:
-                self.precipProbability.append(
-                    self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipProbability"])
-                self.precipIntensity.append(
-                    self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipIntensity"])
-                if self.precipIntensity[x] > 0:
-                    self.precipType.append(self.weatherData[x]["minutely"]["data"][self.timeMin[x]]["precipType"])
+
+        for itr in range(0, self.len):
+            # self..append(self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]][""])
+            self.forecast_time.append(
+                self.time_zone.localize(datetime.fromtimestamp(int(self.weather_data[itr]["currently"]["time"]))))
+            self.delta_time.append(
+                (self.time[itr] - self.forecast_time[itr]))
+            self.time_min.append(
+                (np.round((self.delta_time[itr] / timedelta(minutes=1)))).astype(int))
+            self.time_hr.append(
+                (np.round((self.delta_time[itr] / timedelta(hours=1)))).astype(int))
+            self.wind_bearing.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["windBearing"])
+            self.apparent_temperature.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["apparentTemperature"])
+            self.cloud_cover.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["cloudCover"])
+            self.dew_point.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["dewPoint"])
+            self.humidity.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["humidity"])
+            self.icon.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["icon"])
+            self.ozone.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["ozone"])
+            self.pressure.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["pressure"])
+            self.summary.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["summary"])
+            self.temperature.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["temperature"])
+            self.time_hour_time.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["time"])
+            self.visibility.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["visibility"])
+            self.wind_bearing.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["windBearing"])
+            self.wind_speed.append(
+                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["windSpeed"])
+            self.rel_wind_bear.append(
+                (self.wind_bearing[itr] - self.bear[itr]) % 360)
+            if (self.time_min[itr]) < 60:
+                self.precip_probability.append(
+                    self.weather_data[itr]["minutely"]["data"][self.time_min[itr]]["precipProbability"])
+                self.precip_intensity.append(
+                    self.weather_data[itr]["minutely"]["data"][self.time_min[itr]]["precipIntensity"])
+                if self.precip_intensity[itr] > 0:
+                    self.precip_type.append(
+                        self.weather_data[itr]["minutely"]["data"][self.time_min[itr]]["precipType"])
                 else:
-                    self.precipType.append("None")
+                    self.precip_type.append("None")
             else:
-                self.precipIntensity.append(
-                    self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipIntensity"])
-                self.precipProbability.append(
-                    self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipProbability"])
-                if self.precipIntensity[x] > 0:
-                    self.precipType.append(self.weatherData[x]["hourly"]["data"][self.timeHr[x]]["precipType"])
+                self.precip_intensity.append(
+                    self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["precipIntensity"])
+                self.precip_probability.append(
+                    self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["precipProbability"])
+                if self.precip_intensity[itr] > 0:
+                    self.precip_type.append(
+                        self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["precipType"])
                 else:
-                    self.precipType.append("None")
+                    self.precip_type.append("None")
             if 'fileDirectory' in kwargs:
                 if 'fileName' in kwargs:
-
                     with open('{0}/{1}.pkl'.format(kwargs['fileDirectory'], kwargs['fileName']), 'wb') as output:
-
                         pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
-
-
