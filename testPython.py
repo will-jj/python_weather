@@ -7,7 +7,7 @@ import numpy as np
 steve = RdWth(xmlfile='demoRoute.tcx')
 #print(steve.length)
 steve.speed(kph=25)
-steve.set_ride_start_time(date ="12/03", time = "15:00",test_date = '12/03/17',test_time = "10:00")
+steve.set_ride_start_time(date ="12/03", time = "15:00",test_date = '08/03/17',test_time = "10:00")
 steve.decimate(Points=10)
 
 # steve.getWeatherData('apiremoved', fileDirectory='weatherTAKCROW2', fileName='weatherdataDemoTCX',units='si')

@@ -223,7 +223,7 @@ class TcxRide:
         delta_hours = abs(delta_hours)
         if delta_hours >= 60:
             raise Exception(
-                'Outwith 60 hour forecast range, your finish time is {} from now'.format(delta_hours))
+                'Outwith 60 hour forecast range, your finish time is {} hours from now'.format(delta_hours))
 
 
 
