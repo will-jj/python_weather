@@ -7,29 +7,29 @@ import numpy as np
 steve = RdWth(xmlfile='demoRoute.tcx')
 #print(steve.length)
 steve.speed(kph=25)
-steve.setRideStartTime(date ="12/03", time = "15:00")
+steve.set_ride_start_time(date ="12/03", time = "15:00")
 steve.decimate(Points=10)
 
 # steve.getWeatherData('apiremoved', fileDirectory='weatherTAKCROW2', fileName='weatherdataDemoTCX',units='si')
-steve.loadExistingData('weatherData/weatherdataDemoTCX')
+steve.load_existing_data('weatherData/weatherdataDemoTCX')
 # steve.getForecast(fileDirectory='weatherTAKCROW2', fileName='CrowTakPickle')
-steve.getForecast()
+steve.get_forecast()
 '''
-pprint(steve.precipIntensity)
-print('Wind bearing:' ,steve.windBearing[3])
+pprint(steve.precip_intensity)
+print('Wind bearing:' ,steve.wind_bearing[3])
 print('Rider bearing:' ,steve.bear[3])
-print('Rel bearing:',steve.relWindBear[3])
+print('Rel bearing:',steve.rel_wind_bear[3])
 '''
 
-myBear = list()
+WIND_BEARING = list()
 # -180:180 plots nicer
-for x in steve.relWindBear:
-    myBear.append(x - 180)
+for x in steve.rel_wind_bear:
+    WIND_BEARING.append(x - 180)
 #fig = plt.figure()
 #ax = fig.gca()
-
+pprint(WIND_BEARING)
 """
-plt.stem(steve.dist,steve.relWindBear)
+plt.stem(steve.dist,steve.rel_wind_bear)
 plt.xlabel('Distance [m]')
 plt.ylabel('Relative Wind Bearing [degrees]')
 plt.title('Relative Wind Bearing')
