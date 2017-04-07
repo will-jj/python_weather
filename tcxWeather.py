@@ -212,7 +212,7 @@ class TcxRide:
             if 'test_time' in kwargs:
                 test_time = datetime.strptime(kwargs["test_time"], "%H:%M").time()
                 time_now = datetime.combine(test_date, test_time)
-                
+
             else:
                 raise Exception('No time given')
         else:
