@@ -82,31 +82,13 @@ class TcxRide:
         self.time_min = list()
         self.time_hour_time = list()
 
-    def __bearing(self):
-        self.bearing.append(0) # first bearing 0
-        phi = list()
-        lambd = list()
-        for deg in self.latitude:
-            phi.append(np.deg2rad(deg))
-        for deg in self.longitude:
-            lambd.append(np.deg2rad(deg))
-        for itr in range(1, self.length):
-            arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
-            arc_b = np.cos(phi[itr-1])*np.sin(phi[itr]) - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
-            self.bearing.append(np.degrees(np.arctan2(arc_a, arc_b))%360)
 
-    def __bearingdec(self): # fix to one function for both bearings
-        self.bear.append(0) # first bearing 0
-        phi = list()
-        lambd = list()
-        for deg in self.lat:
-            phi.append(np.deg2rad(deg))
-        for deg in self.lon:
-            lambd.append(np.deg2rad(deg))
-        for itr in range(1, len(self.lat)):
-            arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
-            arc_b = np.cos(phi[itr-1])*np.sin(phi[itr]) - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
-            self.bear.append(np.degrees(np.arctan2(arc_a, arc_b))%360) # 0-360 instead of -180:180
+
+    def __bearing(self):
+        self.bearing = bearing_func(self.latitude, self.longitude)
+
+    def __bearingdec(self):
+        self.bear = bearing_func(self.lat, self.lon)
 
     def speed(self, **kwargs):
 
@@ -199,7 +181,6 @@ class TcxRide:
 
 
     def set_ride_start_time(self, **kwargs):
-        #TODO (Check is in range of forecast)
 
         """
         Enter ride start time
@@ -211,6 +192,9 @@ class TcxRide:
 
         """
 
+        if self.mps == 0:
+            raise Exception('Please input ride speed first')
+
         if 'date' in kwargs:
             datein = datetime.strptime(kwargs["date"], "%d/%m").date()
             datein = datein.replace(year=datetime.today().year)
@@ -220,7 +204,29 @@ class TcxRide:
             timein = datetime.strptime(kwargs["time"], "%H:%M").time()
         else:
             raise Exception('No time given')
+
         start_time = datetime.combine(datein, timein)
+
+        if 'test_date' in kwargs:
+            test_date = datetime.strptime(kwargs["test_date"], "%d/%m/%y").date()
+            if 'test_time' in kwargs:
+                test_time = datetime.strptime(kwargs["test_time"], "%H:%M").time()
+                time_now = datetime.combine(test_date, test_time)
+                
+            else:
+                raise Exception('No time given')
+        else:
+            time_now = datetime.now()
+
+        fin_time = start_time + timedelta(seconds=self.total_time)
+        delta_hours = (fin_time-time_now)/timedelta(hours=1)
+        delta_hours = abs(delta_hours)
+        if delta_hours >= 60:
+            raise Exception(
+                'Outwith 60 hour forecast range, your finish time is {} from now'.format(delta_hours))
+
+
+
         self.ride_start_time = self.time_zone.localize(start_time)
 
 
@@ -388,3 +394,20 @@ class RideWeather(TcxRide):
                 if 'fileName' in kwargs:
                     with open('{0}/{1}.pkl'.format(kwargs['fileDirectory'], kwargs['fileName']), 'wb') as output:
                         pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+
+
+def bearing_func(lat, lon):
+    bearing = list()
+    bearing.append(0)
+    phi = list()
+    lambd = list()
+    for deg in lat:
+        phi.append(np.deg2rad(deg))
+    for deg in lon:
+        lambd.append(np.deg2rad(deg))
+    for itr in range(1, len(lat)):
+        arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
+        arc_b = np.cos(phi[itr-1])*np.sin(phi[itr]) - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
+        bearing.append(np.degrees(np.arctan2(arc_a, arc_b))%360)
+    return bearing
+    
