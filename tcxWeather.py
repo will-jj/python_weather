@@ -10,7 +10,7 @@ import requests
 import tcxparser
 import numpy as np
 
-from pytZ import timezone
+from pytz import timezone
 
 
 class TcxRide:
@@ -33,7 +33,6 @@ class TcxRide:
         self.longitude = self.raw.longitude_points()
         self.distance = self.raw.distance_points()
         self.distance_total = self.distance[self.length-1]
-        self.__bearing()
         self.time_zone = timezone('Europe/London')
 
 
@@ -47,9 +46,9 @@ class TcxRide:
         self.len = 0
 
 
-        self.lat = np.array()
-        self.lon = np.array()
-        self.dist = np.array()
+        self.lat = 0 # np.array()
+        self.lon = 0 # np.array()
+        self.dist = 0 # np.array()
 
         self.time = list()
 
@@ -199,7 +198,7 @@ class TcxRide:
 
 
 
-    def setride_start_time(self, **kwargs):
+    def set_ride_start_time(self, **kwargs):
         #TODO (Check is in range of forecast)
 
         """
