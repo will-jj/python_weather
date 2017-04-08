@@ -4,7 +4,7 @@ tcxweather
 import os
 import pickle
 import json
-from datetime import datetime, timedelta #unused time, date
+from datetime import datetime, timedelta  # unused time, date
 
 import requests
 import tcxparser
@@ -14,10 +14,11 @@ from pytz import timezone
 
 
 class TcxRide:
-    '''
+    """
     Class to obtain data from tcx file and aditional parameters such as ride speed.
 
-    '''
+    """
+
     def __init__(self, xmlfile):
         """
         Init function to initialise TCXRide with chosen TCX File for non weather based analysis
@@ -32,9 +33,8 @@ class TcxRide:
         self.latitude = self.raw.latitude_points()
         self.longitude = self.raw.longitude_points()
         self.distance = self.raw.distance_points()
-        self.distance_total = self.distance[self.length-1]
+        self.distance_total = self.distance[self.length - 1]
         self.time_zone = timezone('Europe/London')
-
 
         self.bearing = list()
         self.bear = list()
@@ -45,18 +45,16 @@ class TcxRide:
 
         self.len = 0
 
-
-        self.lat = 0 # np.array()
-        self.lon = 0 # np.array()
-        self.dist = 0 # np.array()
+        self.lat = None  # np.array()
+        self.lon = None  # np.array()
+        self.dist = 0  # np.array()
 
         self.time = list()
-
 
         self.time_seconds = list()
         self.total_time = 0
 
-        self.ride_start_time = 0 #datetime
+        self.ride_start_time = 0  # datetime
         self.weather_data = list()
         self.precip_intensity = list()
         self.wind_bearing = list()
@@ -82,8 +80,6 @@ class TcxRide:
         self.time_min = list()
         self.time_hour_time = list()
 
-
-
     def __bearing(self):
         self.bearing = bearing_func(self.latitude, self.longitude)
 
@@ -107,15 +103,15 @@ class TcxRide:
         if 'mph' in kwargs:
             self.mph = kwargs['mph']
             self.mps = self.mph / mps_mph
-            self.kph = self.mps*mps_kph
+            self.kph = self.mps * mps_kph
         elif 'kph' in kwargs:
             self.kph = kwargs['kph']
-            self.mps = self.kph/mps_kph
-            self.mph = self.mps*mps_mph
+            self.mps = self.kph / mps_kph
+            self.mph = self.mps * mps_mph
         elif 'mps' in kwargs:
             self.mps = kwargs['mps']
-            self.kph = self.mps*mps_kph
-            self.mph = self.mps*mps_mph
+            self.kph = self.mps * mps_kph
+            self.mph = self.mps * mps_mph
         self.__time()
 
     def decimate(self, **kwargs):
@@ -132,12 +128,12 @@ class TcxRide:
         if 'Distance' in kwargs:
             distance = kwargs['Distance']
             # points not constant this is average
-            num_points = self.distance_total/distance
+            num_points = self.distance_total / distance
         elif 'Points' in kwargs:
             num_points = kwargs['Points']
         elif 'Time' in kwargs:
             if hasattr(self, 'mps'):
-                num_points = self.total_time/kwargs['Time']
+                num_points = self.total_time / kwargs['Time']
             else:
                 raise Exception('no speed defined use x.Speed(mps =y | kph =z | mph =w)')
         else:
@@ -145,7 +141,7 @@ class TcxRide:
 
         num_points = np.floor(num_points).astype(int)
         print('Decimating to {0} Points'.format(num_points))
-        ind = np.linspace(0, (self.length-1), num_points, endpoint=True, retstep=False, dtype=None)
+        ind = np.linspace(0, (self.length - 1), num_points, endpoint=True, retstep=False, dtype=None)
         ind = np.floor(ind)
         ind = ind.astype(int)
         self.len = num_points
@@ -162,23 +158,20 @@ class TcxRide:
         time_sec_add = 0
         self.time.append(self.ride_start_time)
         for itr in range(1, self.len):
-            delta_dist = self.dist[itr]-self.dist[itr-1]
-            time_sec_add += delta_dist/self.mps
+            delta_dist = self.dist[itr] - self.dist[itr - 1]
+            time_sec_add += delta_dist / self.mps
             time_sec_add = int(np.floor(time_sec_add))
             combined = self.ride_start_time + timedelta(seconds=time_sec_add)
             self.time.append(combined)
-
 
     def __time(self):
         self.time_seconds.append(0)
         timetot = 0
         for itr in range(1, self.length):
-            delta_dist = self.distance[itr]-self.distance[itr-1]
-            timetot += delta_dist/self.mps
+            delta_dist = self.distance[itr] - self.distance[itr - 1]
+            timetot += delta_dist / self.mps
             self.time_seconds.append(int(timetot))
         self.total_time = timetot
-
-
 
     def set_ride_start_time(self, **kwargs):
 
@@ -219,13 +212,11 @@ class TcxRide:
             time_now = datetime.now()
 
         fin_time = start_time + timedelta(seconds=self.total_time)
-        delta_hours = (fin_time-time_now)/timedelta(hours=1)
+        delta_hours = (fin_time - time_now) / timedelta(hours=1)
         delta_hours = abs(delta_hours)
         if delta_hours >= 60:
             raise Exception(
                 'Outwith 60 hour forecast range, predicted finish time is in {} hours'.format(delta_hours))
-
-
 
         self.ride_start_time = self.time_zone.localize(start_time)
 
@@ -251,7 +242,7 @@ class RideWeather(TcxRide):
         elif 'xmlfile' in kwargs:
             TcxRide.__init__(self, kwargs['xmlfile'])
         else:
-            raise  Exception('No xmlfile=filestr or loadPrev = picklestring given')
+            raise Exception('No xmlfile=filestr or loadPrev = picklestring given')
 
     def get_weather_data(self, apikey, **kwargs):
         """
@@ -265,9 +256,8 @@ class RideWeather(TcxRide):
 
         """
 
-
         urlprov = 'https://api.darksky.net/forecast/'
-        if  self.weather_data:
+        if self.weather_data:
             raise Exception('Data already exists')
 
         if self.len:
@@ -287,7 +277,6 @@ class RideWeather(TcxRide):
                                                  kwargs['fileName'], itr), 'wb')
                     file.write(data)
                     file.close()
-
 
             self.weather_data.append(json.loads(data))
         print('Gathered weather data')
@@ -328,8 +317,6 @@ class RideWeather(TcxRide):
             fileName(str): File name
 
         """
-
-
 
         for itr in range(0, self.len):
             # self..append(self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]][""])
@@ -400,7 +387,6 @@ class RideWeather(TcxRide):
 
 
 def bearing_func(lat, lon):
-
     """
     Calculates bearing given latitude and longitude
     Args:
@@ -418,8 +404,8 @@ def bearing_func(lat, lon):
     for deg in lon:
         lambd.append(np.deg2rad(deg))
     for itr in range(1, len(lat)):
-        arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
-        arc_b = np.cos(phi[itr-1])*np.sin(phi[itr])\
-                - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
-        bearing.append(np.degrees(np.arctan2(arc_a, arc_b))%360)
+        arc_a = np.sin(lambd[itr] - lambd[itr - 1]) * np.cos(phi[itr])
+        arc_b = np.cos(phi[itr - 1]) * np.sin(phi[itr]) \
+                - np.sin(phi[itr - 1]) * np.cos(phi[itr]) * np.cos(lambd[itr] - lambd[itr - 1])
+        bearing.append(np.degrees(np.arctan2(arc_a, arc_b)) % 360)
     return bearing
