@@ -1,5 +1,5 @@
 """
-tcxWeather
+tcxweather
 """
 import os
 import pickle
@@ -126,7 +126,7 @@ class TcxRide:
         Keyword Args:
             Distance (dec): Define decimation in metres between samples
             Points (int): Define num of points for weather calls
-            # TODO Time (dec): Define decimation in time spacing
+            Time (dec): Define decimation in time spacing seconds
 
         """
         if 'Distance' in kwargs:
@@ -223,7 +223,7 @@ class TcxRide:
         delta_hours = abs(delta_hours)
         if delta_hours >= 60:
             raise Exception(
-                'Outwith 60 hour forecast range, your finish time is {} hours from now'.format(delta_hours))
+                'Outwith 60 hour forecast range, predicted finish time is in {} hours'.format(delta_hours))
 
 
 
@@ -283,7 +283,8 @@ class RideWeather(TcxRide):
                     if not os.path.exists(kwargs['fileDirectory']):
                         os.makedirs(kwargs['fileDirectory'])
                     file = open(
-                        '{0}/{1}{2}.json'.format(kwargs['fileDirectory'], kwargs['fileName'], itr), 'wb')
+                        '{0}/{1}{2}.json'.format(kwargs['fileDirectory'],
+                                                 kwargs['fileName'], itr), 'wb')
                     file.write(data)
                     file.close()
 
@@ -333,7 +334,8 @@ class RideWeather(TcxRide):
         for itr in range(0, self.len):
             # self..append(self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]][""])
             self.forecast_time.append(
-                self.time_zone.localize(datetime.fromtimestamp(int(self.weather_data[itr]["currently"]["time"]))))
+                self.time_zone.localize(
+                    datetime.fromtimestamp(int(self.weather_data[itr]["currently"]["time"]))))
             self.delta_time.append(
                 (self.time[itr] - self.forecast_time[itr]))
             self.time_min.append(
@@ -392,11 +394,21 @@ class RideWeather(TcxRide):
                     self.precip_type.append("None")
             if 'fileDirectory' in kwargs:
                 if 'fileName' in kwargs:
-                    with open('{0}/{1}.pkl'.format(kwargs['fileDirectory'], kwargs['fileName']), 'wb') as output:
+                    with open('{0}/{1}.pkl'.format(kwargs['fileDirectory'],
+                                                   kwargs['fileName']), 'wb') as output:
                         pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
 
 def bearing_func(lat, lon):
+
+    """
+    Calculates bearing given latitude and longitude
+    Args:
+
+        lat (list): Latitude list
+        lon (list): Longitude list
+    """
+
     bearing = list()
     bearing.append(0)
     phi = list()
@@ -407,7 +419,7 @@ def bearing_func(lat, lon):
         lambd.append(np.deg2rad(deg))
     for itr in range(1, len(lat)):
         arc_a = np.sin(lambd[itr]-lambd[itr-1]) * np.cos(phi[itr])
-        arc_b = np.cos(phi[itr-1])*np.sin(phi[itr]) - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
+        arc_b = np.cos(phi[itr-1])*np.sin(phi[itr])\
+                - np.sin(phi[itr-1])*np.cos(phi[itr])*np.cos(lambd[itr]-lambd[itr-1])
         bearing.append(np.degrees(np.arctan2(arc_a, arc_b))%360)
     return bearing
-    

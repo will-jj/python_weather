@@ -1,4 +1,4 @@
-from tcxWeather import  RideWeather as RdWth
+from tcxweather import  RideWeather as RdWth
 from pprint import pprint
 #from matplotlib import pyplot as plt
 import numpy as np
