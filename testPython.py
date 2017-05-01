@@ -1,10 +1,16 @@
-from tcxweather import  RideWeather as RdWth
+from tcxweather import RideWeather as RdWth
 from pprint import pprint
 #from matplotlib import pyplot as plt
+import stravalib
 import numpy as np
 #plt.close("all")
 #steve= RdWth(loadPrev='weatherTAKCROW2/CrowTakPickle.pkl')
-steve = RdWth(xmlfile='demoRoute.tcx')
+token = 'no'
+client = stravalib.client.Client()
+client.access_token = token
+stream_memes = client.get_route_streams(8079319)
+
+steve = RdWth(strava_course=stream_memes)
 #print(steve.length)
 steve.speed(kph=25)
 steve.set_ride_start_time(date ="12/03", time = "15:00",test_date = '12/03/17',test_time = "10:00")

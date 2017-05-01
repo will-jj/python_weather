@@ -9,7 +9,7 @@ from datetime import datetime, timedelta  # unused time, date
 import requests
 import tcxparser
 import numpy as np
-
+import stravalib
 from pytz import timezone
 
 
@@ -19,30 +19,36 @@ class TcxRide:
 
     """
 
-    def __init__(self, xmlfile):
+    def __init__(self, **kwargs):
         """
         Init function to initialise TCXRide with chosen TCX File for non weather based analysis
 
-        Args:
+        Keyword Args:
+            strava_course (obj): Pass Strava Course
             xmlfile (str): TCX path/file you wish to use
+
         """
+        if 'strava_course' in kwargs:
+            course = kwargs['strava_course']
+            self.distance = course['distance'].data
+            self.latitude, self.longitude = zip(*course['latlng'].data)
+        elif 'xmlfile' in kwargs:
 
-        self.raw = tcxparser.TCXParser(xmlfile)
-        self.strava_time = self.raw.time_values()
-        self.length = len(self.strava_time)
-        self.latitude = self.raw.latitude_points()
-        self.longitude = self.raw.longitude_points()
-        self.distance = self.raw.distance_points()
-        self.distance_total = self.distance[self.length - 1]
+            self.raw = tcxparser.TCXParser(xmlfile)
+            self.latitude = self.raw.latitude_points()
+            self.longitude = self.raw.longitude_points()
+            self.distance = self.raw.distance_points()
+        else:
+            raise Exception('No valid data')
+
+        self.length = len(self.distance)
+        self.distance_total = self.distance[-1]
         self.time_zone = timezone('Europe/London')
-
         self.bearing = list()
         self.bear = list()
-
         self.mph = 0
         self.mps = 0
         self.kph = 0
-
         self.len = 0
 
         self.lat = None  # np.array()
@@ -240,9 +246,11 @@ class RideWeather(TcxRide):
 
             self.__dict__.update(loaded_dict.__dict__)
         elif 'xmlfile' in kwargs:
-            TcxRide.__init__(self, kwargs['xmlfile'])
+            TcxRide.__init__(self, xmlfile=kwargs['xmlfile'])
+        elif 'strava_course' in kwargs:
+            TcxRide.__init__(self, strava_course=kwargs['strava_course'])
         else:
-            raise Exception('No xmlfile=filestr or loadPrev = picklestring given')
+            raise Exception('No xmlfile=filestr or loadPrev = picklestring given or strava_course = strava_course_stream')
 
     def get_weather_data(self, apikey, **kwargs):
         """
