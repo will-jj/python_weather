@@ -185,7 +185,7 @@ class TcxRide:
         Enter ride start time
 
         Keyword Args:
-
+            Unix: provide unix
             Date (str): Enter date in format d/m (if not entered defaults to today)
             Time (str): Enter ride start time in format H:M
 
@@ -193,18 +193,20 @@ class TcxRide:
 
         if self.mps == 0:
             raise Exception('Please input ride speed first')
-
-        if 'date' in kwargs:
-            datein = datetime.strptime(kwargs["date"], "%d/%m").date()
-            datein = datein.replace(year=datetime.today().year)
+        if 'unix' in kwargs:
+            start_time = datetime.datetime.fromtimestamp(kwargs['unix'])
         else:
-            datein = datetime.today().date()
-        if 'time' in kwargs:
-            timein = datetime.strptime(kwargs["time"], "%H:%M").time()
-        else:
-            raise Exception('No time given')
+            if 'date' in kwargs:
+                datein = datetime.strptime(kwargs["date"], "%d/%m").date()
+                datein = datein.replace(year=datetime.today().year)
+            else:
+                datein = datetime.today().date()
+            if 'time' in kwargs:
+                timein = datetime.strptime(kwargs["time"], "%H:%M").time()
+            else:
+                raise Exception('No time given')
 
-        start_time = datetime.combine(datein, timein)
+            start_time = datetime.combine(datein, timein)
 
         if 'test_date' in kwargs:
             test_date = datetime.strptime(kwargs["test_date"], "%d/%m/%y").date()
