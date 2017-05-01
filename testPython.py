@@ -10,7 +10,8 @@ client = stravalib.client.Client()
 client.access_token = token
 stream_memes = client.get_route_streams(8079319)
 
-steve = RdWth(strava_course=stream_memes)
+#steve = RdWth(strava_course=stream_memes)
+steve = RdWth(xmlfile='demoRoute.tcx')
 #print(steve.length)
 steve.speed(kph=25)
 steve.set_ride_start_time(date ="12/03", time = "15:00",test_date = '12/03/17',test_time = "10:00")
