@@ -71,6 +71,7 @@ class TcxRide:
         self.humidity = list()
         self.icon = list()
         self.ozone = list()
+        self.wind_comp = list()
 
         self.precip_probability = list()
         self.precip_type = list()
@@ -395,6 +396,8 @@ class RideWeather(TcxRide):
                                                    kwargs['fileName']), 'wb') as output:
                         pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
+        for itr in range(0, self.len):
+            self.wind_comp.append(np.sin(np.deg2rad(self.rel_wind_bear[itr]))*self.wind_speed[itr])
 
 def bearing_func(lat, lon):
     """
