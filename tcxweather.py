@@ -7,7 +7,7 @@ import json
 from datetime import datetime, timedelta  # unused time, date
 
 import requests
-import tcxparser
+# from python_weather import tcxparser
 import numpy as np
 import stravalib
 from pytz import timezone
@@ -34,7 +34,7 @@ class TcxRide:
             self.latitude, self.longitude = zip(*course['latlng'].data)
         elif 'xmlfile' in kwargs:
 
-            self.raw = tcxparser.TCXParser(xmlfile)
+            self.raw = tcxparser.TCXParser(kwargs['xmlfile'])
             self.latitude = self.raw.latitude_points()
             self.longitude = self.raw.longitude_points()
             self.distance = self.raw.distance_points()
@@ -194,7 +194,7 @@ class TcxRide:
         if self.mps == 0:
             raise Exception('Please input ride speed first')
         if 'unix' in kwargs:
-            start_time = datetime.datetime.fromtimestamp(kwargs['unix'])
+            start_time = datetime.fromtimestamp(kwargs['unix'])
         else:
             if 'date' in kwargs:
                 datein = datetime.strptime(kwargs["date"], "%d/%m").date()
