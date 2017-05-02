@@ -89,10 +89,10 @@ class TcxRide:
         }
 
     def __bearing(self):
-        self.bearing = bearing_func(self.latitude, self.longitude)
+        self.bearing = GeoFuncs.bearing_func(self.latitude, self.longitude)
 
     def __bearingdec(self):
-        self.bear = bearing_func(self.lat, self.lon)
+        self.bear = GeoFuncs.bearing_func(self.lat, self.lon)
 
     def speed(self, **kwargs):
 
@@ -382,26 +382,32 @@ class RideWeather(TcxRide):
                         pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
 
-def bearing_func(lat, lon):
+class GeoFuncs:
     """
-    Calculates bearing given latitude and longitude
-    Args:
+    Class to perform static functions.
 
-        lat (list): Latitude list
-        lon (list): Longitude list
     """
+    @staticmethod
+    def bearing_func(lat, lon):
+        """
+        Calculates bearing given latitude and longitude
+        Args:
+    
+            lat (list): Latitude list
+            lon (list): Longitude list
+        """
 
-    bearing = list()
-    bearing.append(0)
-    phi = list()
-    lambd = list()
-    for deg in lat:
-        phi.append(np.deg2rad(deg))
-    for deg in lon:
-        lambd.append(np.deg2rad(deg))
-    for itr in range(1, len(lat)):
-        arc_a = np.sin(lambd[itr] - lambd[itr - 1]) * np.cos(phi[itr])
-        arc_b = np.cos(phi[itr - 1]) * np.sin(phi[itr]) \
-                - np.sin(phi[itr - 1]) * np.cos(phi[itr]) * np.cos(lambd[itr] - lambd[itr - 1])
-        bearing.append(np.degrees(np.arctan2(arc_a, arc_b)) % 360)
-    return bearing
+        bearing = list()
+        bearing.append(0)
+        phi = list()
+        lambd = list()
+        for deg in lat:
+            phi.append(np.deg2rad(deg))
+        for deg in lon:
+            lambd.append(np.deg2rad(deg))
+        for itr in range(1, len(lat)):
+            arc_a = np.sin(lambd[itr] - lambd[itr - 1]) * np.cos(phi[itr])
+            arc_b = np.cos(phi[itr - 1]) * np.sin(phi[itr]) \
+                    - np.sin(phi[itr - 1]) * np.cos(phi[itr]) * np.cos(lambd[itr] - lambd[itr - 1])
+            bearing.append(np.degrees(np.arctan2(arc_a, arc_b)) % 360)
+        return bearing
