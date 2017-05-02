@@ -9,7 +9,7 @@ from datetime import datetime, timedelta  # unused time, date
 import requests
 # from python_weather import tcxparser
 import numpy as np
-import stravalib
+# import stravalib
 from pytz import timezone
 
 
@@ -33,11 +33,11 @@ class TcxRide:
             self.distance = course['distance'].data
             self.latitude, self.longitude = zip(*course['latlng'].data)
         elif 'xmlfile' in kwargs:
-
-            self.raw = tcxparser.TCXParser(kwargs['xmlfile'])
-            self.latitude = self.raw.latitude_points()
-            self.longitude = self.raw.longitude_points()
-            self.distance = self.raw.distance_points()
+            raise Exception('No longer supported')
+            # self.raw = tcxparser.TCXParser(kwargs['xmlfile'])
+            # self.latitude = self.raw.latitude_points()
+            # self.longitude = self.raw.longitude_points()
+            # self.distance = self.raw.distance_points()
         else:
             raise Exception('No valid data')
 
@@ -62,31 +62,31 @@ class TcxRide:
 
         self.ride_start_time = 0  # datetime
         self.weather_data = list()
-        self.precip_intensity = list()
-        self.wind_bearing = list()
-        self.rel_wind_bear = list()
-        self.apparent_temperature = list()
-        self.cloud_cover = list()
-        self.dew_point = list()
-        self.humidity = list()
-        self.icon = list()
-        self.ozone = list()
-        self.wind_comp = list()
-        self.wind_cross = list()
-
-        self.precip_probability = list()
-        self.precip_type = list()
-        self.pressure = list()
-        self.summary = list()
-        self.temperature = list()
-        self.visibility = list()
-        self.wind_bearing = list()
-        self.wind_speed = list()
-        self.forecast_time = list()
-        self.delta_time = list()
-        self.time_hr = list()
-        self.time_min = list()
-        self.time_hour_time = list()
+        self.weather = {
+            'precip_intensity': [],
+            'wind_bearing': [],
+            'rel_wind_bear': [],
+            'apparent_temperature': [],
+            'cloud_cover': [],
+            'dew_point': [],
+            'humidity': [],
+            'icon': [],
+            'ozone': [],
+            'wind_head': [],
+            'wind_cross': [],
+            'precip_probability': [],
+            'precip_type': [],
+            'pressure': [],
+            'summary': [],
+            'temperature': [],
+            'visibility': [],
+            'wind_speed': [],
+            'forecast_time': [],
+            'delta_time': [],
+            'time_hr': [],
+            'time_min': [],
+            'time_hour_time': []
+        }
 
     def __bearing(self):
         self.bearing = bearing_func(self.latitude, self.longitude)
@@ -149,7 +149,8 @@ class TcxRide:
 
         num_points = np.floor(num_points).astype(int)
         print('Decimating to {0} Points'.format(num_points))
-        ind = np.linspace(0, (self.length - 1), num_points, endpoint=True, retstep=False, dtype=None)
+        ind = np.linspace(
+            0, (self.length - 1), num_points, endpoint=True, retstep=False, dtype=None)
         ind = np.floor(ind)
         ind = ind.astype(int)
         self.len = num_points
@@ -226,7 +227,7 @@ class TcxRide:
         delta_hours = abs(delta_hours)
         if delta_hours >= 60:
             raise Exception(
-                'Outwith 60 hour forecast range, predicted finish time is in {} hours'.format(delta_hours))
+                'Outwith 60 hour range, predicted finish time in {} hours'.format(delta_hours))
 
         self.ride_start_time = self.time_zone.localize(start_time)
 
@@ -254,7 +255,7 @@ class RideWeather(TcxRide):
         elif 'strava_course' in kwargs:
             TcxRide.__init__(self, strava_course=kwargs['strava_course'])
         else:
-            raise Exception('No xmlfile=filestr or loadPrev = picklestring given or strava_course = strava_course_stream')
+            raise Exception('No reasonable input given: see docstring')
 
     def get_weather_data(self, apikey, **kwargs):
         """
@@ -332,74 +333,54 @@ class RideWeather(TcxRide):
 
         for itr in range(0, self.len):
             # self..append(self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]][""])
-            self.forecast_time.append(
-                self.time_zone.localize(
-                    datetime.fromtimestamp(int(self.weather_data[itr]["currently"]["time"]))))
-            self.delta_time.append(
-                (self.time[itr] - self.forecast_time[itr]))
-            self.time_min.append(
-                (np.round((self.delta_time[itr] / timedelta(minutes=1)))).astype(int))
-            self.time_hr.append(
-                (np.round((self.delta_time[itr] / timedelta(hours=1)))).astype(int))
-            self.wind_bearing.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["windBearing"])
-            self.apparent_temperature.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["apparentTemperature"])
-            self.cloud_cover.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["cloudCover"])
-            self.dew_point.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["dewPoint"])
-            self.humidity.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["humidity"])
-            self.icon.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["icon"])
-            self.ozone.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["ozone"])
-            self.pressure.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["pressure"])
-            self.summary.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["summary"])
-            self.temperature.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["temperature"])
-            self.time_hour_time.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["time"])
-            self.visibility.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["visibility"])
-            self.wind_bearing.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["windBearing"])
-            self.wind_speed.append(
-                self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["windSpeed"])
-            self.rel_wind_bear.append(
-                (self.wind_bearing[itr] - self.bear[itr]) % 360)
-            if (self.time_min[itr]) < 60:
-                self.precip_probability.append(
-                    self.weather_data[itr]["minutely"]["data"][self.time_min[itr]]["precipProbability"])
-                self.precip_intensity.append(
-                    self.weather_data[itr]["minutely"]["data"][self.time_min[itr]]["precipIntensity"])
-                if self.precip_intensity[itr] > 0:
-                    self.precip_type.append(
-                        self.weather_data[itr]["minutely"]["data"][self.time_min[itr]]["precipType"])
+            forecast_time = self.time_zone.localize(
+                datetime.fromtimestamp(int(self.weather_data[itr]["currently"]["time"])))
+            delta_time = (self.time[itr] - forecast_time)
+            time_mins = (np.round((delta_time / timedelta(minutes=1)))).astype(int)
+            time_hr = (np.round((delta_time / timedelta(hours=1)))).astype(int)
+            hour_weather = self.weather_data[itr]["hourly"]["data"][time_hr]
+
+            self.weather['wind_bearing'].append(hour_weather["windBearing"])
+            self.weather['apparent_temperature'].append(hour_weather["apparentTemperature"])
+            self.weather['cloud_cover'].append(hour_weather["cloudCover"])
+            self.weather['dew_point'].append(hour_weather["dewPoint"])
+            self.weather['humidity'].append(hour_weather["humidity"])
+            self.weather['icon'].append(hour_weather["icon"])
+            self.weather['ozone'].append(hour_weather["ozone"])
+            self.weather['pressure'].append(hour_weather["pressure"])
+            self.weather['summary'].append(hour_weather["summary"])
+            self.weather['temperature'].append(hour_weather["temperature"])
+            self.weather['time_hour_time'].append(hour_weather["time"])
+            self.weather['visibility'].append(hour_weather["visibility"])
+            self.weather['wind_bearing'].append(hour_weather["windBearing"])
+            self.weather['wind_speed'].append(hour_weather["windSpeed"])
+            self.weather['rel_wind_bear'].append(
+                (hour_weather['windBearing'] - self.bear[itr]) % 360)
+            self.weather['wind_head'].append(
+                np.sin(np.deg2rad(hour_weather["windBearing"])) * hour_weather["windSpeed"])
+            self.weather['wind_cross'].append(
+                np.cos(np.deg2rad(hour_weather["windBearing"])) * hour_weather["windSpeed"])
+            if time_mins < 60:
+                minute_weather = self.weather_data[itr]["minutely"]["data"][time_mins]
+                self.weather['precip_probability'].append(minute_weather["precipProbability"])
+                self.weather['precip_intensity'].append(minute_weather["precipIntensity"])
+                if minute_weather["precipIntensity"] > 0:
+                    self.weather['precip_type'].append(minute_weather["precipType"])
                 else:
-                    self.precip_type.append("None")
+                    self.weather['precip_type'].append("None")
             else:
-                self.precip_intensity.append(
-                    self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["precipIntensity"])
-                self.precip_probability.append(
-                    self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["precipProbability"])
-                if self.precip_intensity[itr] > 0:
-                    self.precip_type.append(
-                        self.weather_data[itr]["hourly"]["data"][self.time_hr[itr]]["precipType"])
+                self.weather['precip_intensity'].append(hour_weather["precipIntensity"])
+                self.weather['precip_probability'].append(hour_weather["precipProbability"])
+                if hour_weather["precipIntensity"] > 0:
+                    self.weather['precip_type'].append(hour_weather["precipType"])
                 else:
-                    self.precip_type.append("None")
+                    self.weather['precip_type'].append("None")
             if 'fileDirectory' in kwargs:
                 if 'fileName' in kwargs:
                     with open('{0}/{1}.pkl'.format(kwargs['fileDirectory'],
                                                    kwargs['fileName']), 'wb') as output:
                         pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
 
-        for itr in range(0, self.len):
-            self.wind_comp.append(np.sin(np.deg2rad(self.rel_wind_bear[itr]))*self.wind_speed[itr])
-            self.wind_cross.append(np.cos(np.deg2rad(self.rel_wind_bear[itr]))*self.wind_speed[itr])
 
 def bearing_func(lat, lon):
     """
