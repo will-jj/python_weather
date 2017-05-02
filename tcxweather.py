@@ -72,6 +72,7 @@ class TcxRide:
         self.icon = list()
         self.ozone = list()
         self.wind_comp = list()
+        self.wind_cross = list()
 
         self.precip_probability = list()
         self.precip_type = list()
@@ -398,6 +399,7 @@ class RideWeather(TcxRide):
 
         for itr in range(0, self.len):
             self.wind_comp.append(np.sin(np.deg2rad(self.rel_wind_bear[itr]))*self.wind_speed[itr])
+            self.wind_cross.append(np.cos(np.deg2rad(self.rel_wind_bear[itr]))*self.wind_speed[itr])
 
 def bearing_func(lat, lon):
     """
