@@ -354,12 +354,12 @@ class RideWeather(TcxRide):
             self.weather['visibility'].append(hour_weather["visibility"])
             self.weather['wind_bearing'].append(hour_weather["windBearing"])
             self.weather['wind_speed'].append(hour_weather["windSpeed"])
-            self.weather['rel_wind_bear'].append(
-                (hour_weather['windBearing'] - self.bear[itr]) % 360)
+            rel_wind = (hour_weather["windBearing"] - self.bear[itr]) % 360
+            self.weather['rel_wind_bear'].append(rel_wind)
             self.weather['wind_head'].append(
-                np.sin(np.deg2rad(hour_weather["rel_wind_bear"])) * hour_weather["windSpeed"])
+                np.sin(np.deg2rad(rel_wind)) * hour_weather["windSpeed"])
             self.weather['wind_cross'].append(
-                np.cos(np.deg2rad(hour_weather["rel_wind_bear"])) * hour_weather["windSpeed"])
+                np.cos(np.deg2rad(rel_wind)) * hour_weather["windSpeed"])
             if time_mins < 60:
                 minute_weather = self.weather_data[itr]["minutely"]["data"][time_mins]
                 self.weather['precip_probability'].append(minute_weather["precipProbability"])
